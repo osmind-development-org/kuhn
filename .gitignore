@@ -1,0 +1,52 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# Data dir (SQLite DB + uploaded project files) — see KUHN_DATA_DIR
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
+
+# Claude Code local settings (user-specific, not committed)
+.claude/settings.local.json
+
+README.pdf
+TESTING.pdf
+.DS_Store
+
+# Vite dep cache
+.vite/

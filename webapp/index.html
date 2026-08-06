@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuhn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- ================= TOP BAR ================= -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"><span class="brand-mark-inner"></span></span>
+          <span id="app-name">Kuhn</span>
+        </div>
+        <span class="topbar-divider" aria-hidden="true"></span>
+        <!-- Live org / project / document segments — rendered by breadcrumb.ts
+             (story 007), wired to the workspace store. -->
+        <nav id="breadcrumb" class="breadcrumb" aria-label="Workspace location"></nav>
+      </div>
+      <div class="topbar-right">
+        <span id="topbar-activity" class="topbar-activity" role="status" aria-live="polite" hidden></span>
+        <button id="toggle-chat" type="button" class="btn btn-quiet" title="Toggle chat panel">Chat</button>
+        <button id="toggle-files" type="button" class="btn btn-quiet" title="Toggle files panel">Files</button>
+        <button id="toggle-preview" type="button" class="btn btn-ghost" title="Toggle PDF preview">Preview&nbsp;PDF</button>
+        <div class="export-wrap">
+          <button id="export-menu-btn" type="button" class="btn btn-solid" title="Export the document"
+            aria-haspopup="true" aria-expanded="false">Export</button>
+          <div id="export-menu" class="export-menu" hidden role="menu">
+            <button id="export-docx" type="button" class="export-item" role="menuitem" title="Export as Word document">Word&nbsp;(.docx)</button>
+            <button id="export-tex" type="button" class="export-item" role="menuitem" title="Export as LaTeX">LaTeX&nbsp;(.tex)</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= MIDDLE ================= -->
+    <main id="layout">
+      <!-- ---------- LEFT: CHAT ---------- -->
+      <aside id="chat-panel">
+        <div id="seeding-panel" hidden></div>
+        <!-- Conversation filter (issue #45): chat.ts fills label + toggle -->
+        <div id="chat-filter-bar">
+          <span id="chat-filter-label"></span>
+          <!-- Context size + fresh-start (issue #43): chat.ts fills both -->
+          <span id="chat-context-size" title="Approximate context the selected agent carries into its next reply"></span>
+          <button id="chat-filter-toggle" type="button" class="btn btn-quiet btn-sm" aria-pressed="false"
+            title="Toggle between the selected agent's conversation and the full history"></button>
+        </div>
+        <div id="chat-log"></div>
+        <form id="chat-form">
+          <div class="chat-field">
+            <textarea id="chat-input" rows="1"
+              placeholder="Ask an agent, or describe an edit…"></textarea>
+            <div class="chat-field-row">
+              <div class="agent-selector">
+                <button id="agent-selector-btn" type="button" class="agent-pill"
+                  aria-haspopup="listbox" aria-expanded="false" title="Choose which agent to address"></button>
+                <div id="agent-selector-menu" class="agent-menu" hidden role="listbox"></div>
+                <!-- Hidden native control: chat.ts reads its .value (story 025 keeps the contract) -->
+                <select id="chat-role" tabindex="-1" aria-hidden="true">
+                  <option value="pm" selected>PM</option>
+                  <option value="writer">Writer</option>
+                  <option value="ra">Research</option>
+                  <option value="advisor">Advisor</option>
+                  <option value="reviewer">Reviewer</option>
+                  <option value="analyst">Analyst</option>
+                </select>
+              </div>
+              <button id="chat-clear-btn" type="button" class="btn btn-quiet btn-sm"
+                title="Start a fresh conversation with the selected agent (clears its chat context)"
+                aria-label="Start a fresh conversation"></button>
+              <button type="submit" class="send-btn" title="Send (Enter)" aria-label="Send"></button>
+            </div>
+          </div>
+        </form>
+      </aside>
+
+      <!-- ---------- CENTER: EDITOR ---------- -->
+      <section id="editor-pane">
+        <div id="editor-subheader">
+          <span id="editor-path" class="editor-path">untitled.md</span>
+          <div class="editor-meta">
+            <span id="editor-wordcount">0 words</span>
+            <span class="slash-hint-chip"><kbd>/</kbd> commands</span>
+            <!-- External review links (epic 013) — share-links.ts owns it -->
+            <button id="editor-share-btn" type="button" class="btn btn-quiet btn-sm"
+              title="Share this document with an external reviewer">Share</button>
+            <!-- Version history (story 008-002) — history-panel.ts owns it -->
+            <button id="editor-history-btn" type="button" class="btn btn-quiet btn-sm"
+              title="Version history">History</button>
+            <!-- Rich ⇄ raw markdown toggle (story 039) — editor.ts owns it -->
+            <button id="editor-mode-toggle" type="button" class="btn btn-quiet btn-sm"
+              aria-pressed="false" hidden>Source</button>
+            <!-- Margin comments (story 008-004) — comments.ts owns it -->
+            <button id="editor-comments-btn" type="button" class="btn btn-quiet btn-sm"
+              aria-pressed="false" title="Margin comments">Comments</button>
+          </div>
+        </div>
+        <div id="editor-scroll">
+          <div id="editor"></div>
+        </div>
+      </section>
+
+      <!-- ---------- MARGIN COMMENTS (story 008-004) — comments.ts owns it ---------- -->
+      <aside id="comments-panel" class="collapsed">
+        <div id="comments-toolbar">
+          <span class="panel-eyebrow">Comments</span>
+          <span class="spacer"></span>
+          <button id="comments-close" type="button" class="preview-close"
+            title="Close comments" aria-label="Close comments">&times;</button>
+        </div>
+        <div id="comments-composer" hidden>
+          <blockquote class="mc-quote"></blockquote>
+          <form class="mc-compose">
+            <textarea class="mc-input" rows="3" placeholder="Comment on the selected text…"></textarea>
+            <div class="mc-compose-actions">
+              <button type="button" class="mc-cancel btn btn-ghost btn-sm">Cancel</button>
+              <button type="submit" class="btn btn-accent btn-sm">Comment</button>
+            </div>
+          </form>
+        </div>
+        <div id="comments-list"></div>
+      </aside>
+
+      <!-- ---------- PDF PREVIEW (story 019; floating window) ---------- -->
+      <aside id="preview-panel" class="collapsed">
+        <div id="preview-toolbar">
+          <span class="panel-eyebrow">Preview</span>
+          <span class="spacer"></span>
+          <button id="preview-refresh" type="button" class="btn btn-quiet btn-sm" title="Re-render the PDF">Render</button>
+          <button id="preview-close" type="button" class="preview-close" title="Close preview" aria-label="Close preview">&times;</button>
+        </div>
+        <div id="preview-status"></div>
+        <iframe id="preview-frame" title="PDF preview"></iframe>
+        <!-- Non-PDF file previews (images, text, download links) — story 014 -->
+        <div id="preview-alt" hidden></div>
+        <div id="preview-resize" title="Drag to resize"></div>
+      </aside>
+
+      <!-- Drag handle to resize the files panel (story: fixed/resizable files) -->
+      <div id="files-resizer" class="pane-resizer" role="separator"
+        aria-orientation="vertical" title="Drag to resize the files panel"></div>
+
+      <!-- ---------- RIGHT: FILES ---------- -->
+      <aside id="files-panel">
+        <div id="files-header">
+          <span class="panel-eyebrow">Files</span>
+          <span class="spacer"></span>
+          <button id="files-new-folder-btn" type="button" class="btn btn-quiet btn-sm files-icon-btn" title="New folder in the selected folder" aria-label="New folder"></button>
+          <button id="files-refresh-btn" type="button" class="btn btn-quiet btn-sm file-refresh" title="Refresh files" aria-label="Refresh files"></button>
+          <button id="files-upload-btn" type="button" class="btn btn-quiet btn-sm" title="Upload files">Upload</button>
+          <input id="files-upload-input" type="file" multiple hidden />
+        </div>
+        <div id="file-tree"></div>
+      </aside>
+    </main>
+
+    <!-- ================= STATUS BAR ================= -->
+    <footer id="statusbar">
+      <div class="status-left">
+        <span id="status-doc"></span>
+        <span id="status-save" data-state="saved">saved</span>
+        <span id="status-notice" role="status" aria-live="polite"></span>
+      </div>
+      <div class="status-right">
+        <span id="status-agent"></span>
+        <span id="status-budget" data-state="ok"></span>
+        <span id="status-tokens"></span>
+        <span id="status-version" title="App build"></span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
